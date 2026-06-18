@@ -38,6 +38,7 @@ jobs:
           oci_tenancy: ${{ secrets.OCI_TENANCY }}
           oci_region: ${{ secrets.OCI_REGION }}
           oci_profile: DEFAULT
+          debug: true
 
       - name: Verify OCI auth
         shell: bash
