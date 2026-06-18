@@ -29,9 +29,30 @@ jobs:
           set -euo pipefail
           bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)" -- --accept-all-defaults
           echo "$HOME/bin" >> "$GITHUB_PATH"
+       - name: Setup OCI CLI with OIDC Token Exchange (npm Package)
+          oidc: true  # Enable OIDC for Bitbucket
+          script:
+            # Setup OCI CLI
+            - curl -LO https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            - bash install.sh --accept-all-defaults
+            - export PATH=$PATH:/root/bin
+            
+            # Install the token exchange CLI from npm
+            - npm install -g @gtrevorrow/oci-token-exchange
+            
+            # Run the installed CLI for token exchange
+            - >
+              export PLATFORM=bitbucket &&
+              export OIDC_CLIENT_IDENTIFIER=${{ secrets.OIDC_CLIENT_IDENTIFIER }} &&
+              export DOMAIN_BASE_URL=${{ secrets.DOMAIN_BASE_URL }} &&
+              export OCI_TENANCY=${{ secrets.OCI_TENANCY }} &&
+              export OCI_REGION=${{ secrets.OCI_REGION }} &&
+              export RETRY_COUNT=3
+              export DEBUG=true
+            - oci-token-exchange || exit 1
 
       - name: Exchange GitHub OIDC token for OCI session token
-        uses: gtrevorrow/oci-token-exchange-action@v1
+        uses: gtrevorrow/oci-token-exchange-action@latest
         env:
           DEBUG: true
         with:
