@@ -10,7 +10,7 @@ jobs:
   run-oci:
     runs-on: ubuntu-latest
     env:
-      DEBUG: true
+      DEBUG: 'true'
 
     permissions:
       id-token: write
@@ -35,7 +35,7 @@ jobs:
       - name: Exchange GitHub OIDC token for OCI session token
         uses: gtrevorrow/oci-token-exchange-action@latest
         env:
-          DEBUG: true
+          DEBUG: 'true'
         with:
           oidc_client_identifier: ${{ secrets.OIDC_CLIENT_IDENTIFIER }}
           domain_base_url: ${{ secrets.DOMAIN_BASE_URL }}
