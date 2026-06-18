@@ -1,0 +1,52 @@
+name: Run OCI Token Exchange
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-oci:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: "20"
+
+      - name: Install OCI CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)" -- --accept-all-defaults
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Exchange GitHub OIDC token for OCI session token
+        uses: gtrevorrow/oci-token-exchange-action@v1
+        with:
+          oidc_client_identifier: ${{ secrets.OIDC_CLIENT_IDENTIFIER }}
+          domain_base_url: ${{ vars.DOMAIN_BASE_URL }}
+          oci_tenancy: ${{ secrets.OCI_TENANCY }}
+          oci_region: ${{ vars.OCI_REGION }}
+          oci_profile: DEFAULT
+
+      - name: Verify OCI auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          oci --auth security_token --profile DEFAULT os ns get
+
+      - name: Example OCI command
+        shell: bash
+        run: |
+          set -euo pipefail
+          oci --auth security_token --profile DEFAULT iam region-subscription list --tenancy-id "${{ secrets.OCI_TENANCY }}"
