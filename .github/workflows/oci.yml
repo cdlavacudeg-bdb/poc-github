@@ -34,9 +34,9 @@ jobs:
         uses: gtrevorrow/oci-token-exchange-action@v1
         with:
           oidc_client_identifier: ${{ secrets.OIDC_CLIENT_IDENTIFIER }}
-          domain_base_url: ${{ vars.DOMAIN_BASE_URL }}
+          domain_base_url: ${{ secrets.DOMAIN_BASE_URL }}
           oci_tenancy: ${{ secrets.OCI_TENANCY }}
-          oci_region: ${{ vars.OCI_REGION }}
+          oci_region: ${{ secrets.OCI_REGION }}
           oci_profile: DEFAULT
 
       - name: Verify OCI auth
