@@ -1,4 +1,4 @@
-name: Run OCI Token Exchange
+name: Run OCI Token Exchange DevOps
 
 on:
   push:
