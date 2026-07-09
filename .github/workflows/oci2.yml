@@ -1,0 +1,45 @@
+name: Run OCI Token Exchange
+
+on:
+  push:
+    branches:
+      - oidc
+  workflow_dispatch:
+
+jobs:
+  run-oci:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup OCI OIDC Auth
+        uses: devopshouse/oci-oidc-auth-config@v1
+        with:
+          oci_idcs_endpoint:  ${{ secrets.DOMAIN_BASE_URL }}
+          oci_client_id:      ${{ secrets.OCI_CLIENT_ID }}
+          oci_client_secret:  ${{ secrets.OCI_CLIENT_SECRET }}
+          oci_region:         ${{ secrets.OCI_REGION }}
+          oci_tenancy_id:     ${{ secrets.OCI_TENANCY_ID }}
+          oci_compartment_id: ${{ secrets.OCI_COMPARTMENT_ID }}
+
+      - name: Verify OCI auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          oci --auth security_token --profile DEFAULT os ns get
+
+      - name: Example OCI command
+        shell: bash
+        run: |
+          set -euo pipefail
+          oci --auth security_token --profile DEFAULT iam region-subscription list \
+            --tenancy-id "${{ secrets.OCI_TENANCY_ID }}"
+
+      - name: Limpiar archivos temporales
+        if: always()
+        run: rm -f public_key.pem token-response.json
