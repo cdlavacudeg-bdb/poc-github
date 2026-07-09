@@ -3,7 +3,7 @@ name: Run OCI Token Exchange
 on:
   push:
     branches:
-      - test
+      - main
   workflow_dispatch:
 
 jobs:
