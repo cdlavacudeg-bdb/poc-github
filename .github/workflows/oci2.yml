@@ -3,7 +3,7 @@ name: Run OCI Token Exchange DevOps
 on:
   push:
     branches:
-      - oidc
+      - main
   workflow_dispatch:
 
 jobs:
