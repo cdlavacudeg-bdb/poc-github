@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           oci --auth security_token --profile DEFAULT iam region-subscription list \
-            --tenancy-id "${{ secrets.OCI_TENANCY_ID }}"
+            --tenancy-id "${{ secrets.OCI_TENANCY }}"
 
       - name: Limpiar archivos temporales
         if: always()
